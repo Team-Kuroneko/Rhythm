@@ -34,7 +34,7 @@
     mapArray = [[231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 115], [215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 215, 216, 115], [103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 232, 115], [119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 232, 115], [95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 102, 104, 232, 115], [97, 81, 81, 81, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 102, 104, 232, 115], [81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 102, 104, 232, 115], [97, 97, 81, 97, 97, 97, 97, 81, 81, 81, 81, 81, 81, 81, 81, 81, 102, 104, 232, 115], [97, 97, 81, 81, 81, 81, 81, 81, 97, 97, 97, 97, 97, 97, 97, 97, 102, 104, 232, 115], [85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 102, 104, 232, 115], [68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 102, 104, 232, 115], [67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 102, 104, 232, 115], [67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 102, 104, 232, 115], [142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 102, 104, 232, 115], [87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 103, 104, 232, 115], [119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 120, 232, 115], [247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 248, 115], [95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 115], [81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 115], [101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101]];
     map.loadData(mapArray);
     map.x = 0;
-    map.y = (game.bs * 10) * -1;
+    map.y = 0;
     game.rootScene.addChild(map);
     player = new Sprite(game.bs * 2, game.bs * 2);
     player.image = game.assets[IMG_CHARA0_PATH];
@@ -42,36 +42,71 @@
     player.y = game.bs * 10;
     player.frame = 0;
     game.rootScene.addChild(player);
-    player.addEventListener(Event.ENTER_FRAME, function() {
-      player.frame = (player.age % 3) + (pdir * 9);
-      if (game.input.down) {
-        pdir = 0;
-      }
-      if (game.input.left) {
-        pdir = 1;
-      }
-      if (game.input.right) {
-        pdir = 2;
-      }
-      if (game.input.up) {
-        pdir = 3;
-      }
-    });
+
+    /*
+    player.addEventListener Event.ENTER_FRAME, ->
+        if game.input.down
+            pdir = 0
+        if game.input.left
+            pdir = 1
+        if game.input.right
+            pdir = 2
+        if game.input.up
+            pdir = 3
+        
+        return
+     */
     game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
       gtime += 1;
       if (gtime % (game.fps / grhythm) === 0) {
         player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3);
+        if (game.input.down) {
+          pdir = 0;
+        }
+        if (game.input.left) {
+          pdir = 1;
+        }
+        if (game.input.right) {
+          pdir = 2;
+        }
+        if (game.input.up) {
+          pdir = 3;
+        }
         if (pdir === 0 && map.y > game.bs * -28) {
-          map.y -= game.bs;
+          map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(function() {
+            return player.frame = 0 + (pdir * 9);
+          }).then(function() {
+            return player.frame = 1 + (pdir * 9);
+          }).then(function() {
+            return player.frame = 2 + (pdir * 9);
+          });
         }
         if (pdir === 1 && player.x < game.bs * (MAP_SIZE_X - 3)) {
-          map.x += game.bs;
+          map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(function() {
+            return player.frame = 0 + (pdir * 9);
+          }).then(function() {
+            return player.frame = 1 + (pdir * 9);
+          }).then(function() {
+            return player.frame = 2 + (pdir * 9);
+          });
         }
         if (pdir === 2 && player.x > game.bs) {
-          map.x -= game.bs;
+          map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(function() {
+            return player.frame = 0 + (pdir * 9);
+          }).then(function() {
+            return player.frame = 1 + (pdir * 9);
+          }).then(function() {
+            return player.frame = 2 + (pdir * 9);
+          });
         }
         if (pdir === 3 && map.y < player.y) {
-          map.y += game.bs;
+          map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(function() {
+            return player.frame = 0 + (pdir * 9);
+          }).then(function() {
+            return player.frame = 1 + (pdir * 9);
+          }).then(function() {
+            return player.frame = 2 + (pdir * 9);
+          });
         }
         console.log('map.x =' + map.x + ', map.y =' + map.y);
       }

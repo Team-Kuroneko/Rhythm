@@ -45,7 +45,7 @@ main = ->
     ]
     map.loadData mapArray
     map.x = 0
-    map.y = (game.bs * 10) * -1
+    map.y = 0
     game.rootScene.addChild map
     
     player = new Sprite(game.bs * 2, game.bs * 2)
@@ -56,8 +56,8 @@ main = ->
     
     game.rootScene.addChild player
 
+    ###
     player.addEventListener Event.ENTER_FRAME, ->
-        player.frame = (player.age % 3) + (pdir * 9)
         if game.input.down
             pdir = 0
         if game.input.left
@@ -68,6 +68,7 @@ main = ->
             pdir = 3
         
         return 
+    ###
 
     game.rootScene.addEventListener Event.ENTER_FRAME, ->
         gtime += 1
@@ -75,17 +76,42 @@ main = ->
         if gtime % (game.fps / grhythm) is 0
             # キャラをぴょんぴょん
             player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3)
-            
+
+            if game.input.down
+                pdir = 0
+            if game.input.left
+                pdir = 1
+            if game.input.right
+                pdir = 2
+            if game.input.up
+                pdir = 3
+
             if pdir is 0 and map.y > game.bs * -28
-                map.y -= game.bs
+                # map.y -= game.bs
+                map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
+                    player.frame = 0 + (pdir * 9)).then(->
+                    player.frame = 1 + (pdir * 9)).then(->
+                    player.frame = 2 + (pdir * 9))
             if pdir is 1 and player.x < game.bs * (MAP_SIZE_X - 3)
-                map.x += game.bs
+                # map.x += game.bs
+                map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
+                    player.frame = 0 + (pdir * 9)).then(->
+                    player.frame = 1 + (pdir * 9)).then(->
+                    player.frame = 2 + (pdir * 9))
             if pdir is 2 and player.x > game.bs
-                map.x -= game.bs
+                # map.x -= game.bs
+                map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
+                    player.frame = 0 + (pdir * 9)).then(->
+                    player.frame = 1 + (pdir * 9)).then(->
+                    player.frame = 2 + (pdir * 9))
             if pdir is 3 and map.y < player.y
-                map.y += game.bs
-            console.log('map.x =' + map.x + ', map.y =' + map.y)
+                # map.y += game.bs
+                map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(->
+                    player.frame = 0 + (pdir * 9)).then(->
+                    player.frame = 1 + (pdir * 9)).then(->
+                    player.frame = 2 + (pdir * 9))
             
+            console.log('map.x =' + map.x + ', map.y =' + map.y)
 
         return
     
