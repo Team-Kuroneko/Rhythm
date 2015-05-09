@@ -10,6 +10,8 @@ game = null
 gtime = 0
 MAP_SIZE_X = 20
 MAP_SIZE_Y = 40
+grhythm = 2
+pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
 
 # ロードが完了した直後に実行される関数。
 main = -> 
@@ -53,29 +55,37 @@ main = ->
     player.frame = 0
     
     game.rootScene.addChild player
-    
+
     player.addEventListener Event.ENTER_FRAME, ->
-        player.frame = player.age % 3
-        if game.input.up and map.y < player.y
-            map.y += game.bs
-            console.log('map.x =' + map.x + ', map.y =' + map.y)
-        if game.input.down and map.y > game.bs * -28
-            map.y -= game.bs
-            console.log('map.x =' + map.x + ', map.y =' + map.y)
-        if game.input.left and player.x > game.bs
-            player.x -= game.bs
-            console.log('map.x =' + map.x + ', map.y =' + map.y)
-        if game.input.right and player.x < game.bs * (MAP_SIZE_X - 3)
-            player.x += game.bs
-            console.log('map.x =' + map.x + ', map.y =' + map.y)
+        player.frame = (player.age % 3) + (pdir * 9)
+        if game.input.down
+            pdir = 0
+        if game.input.left
+            pdir = 1
+        if game.input.right
+            pdir = 2
+        if game.input.up
+            pdir = 3
         
         return 
-    
+
     game.rootScene.addEventListener Event.ENTER_FRAME, ->
         gtime += 1
         
-        if gtime % (game.fps / 2) is 0
+        if gtime % (game.fps / grhythm) is 0
+            # キャラをぴょんぴょん
             player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3)
+            
+            if pdir is 0 and map.y > game.bs * -28
+                map.y -= game.bs
+            if pdir is 1 and player.x < game.bs * (MAP_SIZE_X - 3)
+                map.x += game.bs
+            if pdir is 2 and player.x > game.bs
+                map.x -= game.bs
+            if pdir is 3 and map.y < player.y
+                map.y += game.bs
+            console.log('map.x =' + map.x + ', map.y =' + map.y)
+            
 
         return
     

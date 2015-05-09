@@ -1,5 +1,5 @@
 (function() {
-  var IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, MAP_SIZE_X, MAP_SIZE_Y, game, gtime, init, main;
+  var IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, MAP_SIZE_X, MAP_SIZE_Y, game, grhythm, gtime, init, main, pdir;
 
   enchant();
 
@@ -21,6 +21,10 @@
 
   MAP_SIZE_Y = 40;
 
+  grhythm = 2;
+
+  pdir = 0;
+
   main = function() {
     var map, mapArray, player;
     game.rootScene.backgroundColor = "#000000";
@@ -39,28 +43,37 @@
     player.frame = 0;
     game.rootScene.addChild(player);
     player.addEventListener(Event.ENTER_FRAME, function() {
-      player.frame = player.age % 3;
-      if (game.input.up && map.y < player.y) {
-        map.y += game.bs;
-        console.log('map.x =' + map.x + ', map.y =' + map.y);
+      player.frame = (player.age % 3) + (pdir * 9);
+      if (game.input.down) {
+        pdir = 0;
       }
-      if (game.input.down && map.y > game.bs * -28) {
-        map.y -= game.bs;
-        console.log('map.x =' + map.x + ', map.y =' + map.y);
+      if (game.input.left) {
+        pdir = 1;
       }
-      if (game.input.left && player.x > game.bs) {
-        player.x -= game.bs;
-        console.log('map.x =' + map.x + ', map.y =' + map.y);
+      if (game.input.right) {
+        pdir = 2;
       }
-      if (game.input.right && player.x < game.bs * (MAP_SIZE_X - 3)) {
-        player.x += game.bs;
-        console.log('map.x =' + map.x + ', map.y =' + map.y);
+      if (game.input.up) {
+        pdir = 3;
       }
     });
     game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
       gtime += 1;
-      if (gtime % (game.fps / 2) === 0) {
+      if (gtime % (game.fps / grhythm) === 0) {
         player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3);
+        if (pdir === 0 && map.y > game.bs * -28) {
+          map.y -= game.bs;
+        }
+        if (pdir === 1 && player.x < game.bs * (MAP_SIZE_X - 3)) {
+          map.x += game.bs;
+        }
+        if (pdir === 2 && player.x > game.bs) {
+          map.x -= game.bs;
+        }
+        if (pdir === 3 && map.y < player.y) {
+          map.y += game.bs;
+        }
+        console.log('map.x =' + map.x + ', map.y =' + map.y);
       }
     });
   };
