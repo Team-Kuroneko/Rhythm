@@ -71,7 +71,7 @@ main = ->
 
     game.rootScene.addEventListener Event.ENTER_FRAME, ->
         gtime += 1
-        
+        #この中にいろいろな判定を付け加える
         if gtime % (game.fps / grhythm) is 0
             # キャラをぴょんぴょん
             player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3)
