@@ -8,8 +8,8 @@ IMG_MAP0_PATH = './images/map0.gif'
 IMG_MAP2_PATH = './images/map2.png'
 game = null
 gtime = 0
-MAP_SIZE_X = 20
-MAP_SIZE_Y = 40
+MAP_SIZE_X = 80
+MAP_SIZE_Y = 80
 grhythm = 4
 pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
 
@@ -228,19 +228,19 @@ main = ->
             if game.input.up
                 pdir = 3
 
-            if pdir is 0 and map.y > game.bs * -28
+            if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
                 # map.y -= game.bs
                 map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
                     player.frame = 0 + (pdir * 9)).then(->
                     player.frame = 1 + (pdir * 9)).then(->
                     player.frame = 2 + (pdir * 9))
-            if pdir is 1 and player.x < game.bs * (MAP_SIZE_X - 3)
+            if pdir is 1 and map.x < player.x
                 # map.x += game.bs
                 map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
                     player.frame = 0 + (pdir * 9)).then(->
                     player.frame = 1 + (pdir * 9)).then(->
                     player.frame = 2 + (pdir * 9))
-            if pdir is 2 and player.x > game.bs
+            if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 12) * -1
                 # map.x -= game.bs
                 map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
                     player.frame = 0 + (pdir * 9)).then(->
@@ -253,7 +253,7 @@ main = ->
                     player.frame = 1 + (pdir * 9)).then(->
                     player.frame = 2 + (pdir * 9))
             
-            console.log('map.x =' + map.x + ', map.y =' + map.y)
+            console.log('map.x =' + map.x + ', map.y =' + map.y + 'player.x =' + player.x + ', player.y =' + player.y)
 
         return
     

@@ -17,9 +17,9 @@
 
   gtime = 0;
 
-  MAP_SIZE_X = 20;
+  MAP_SIZE_X = 80;
 
-  MAP_SIZE_Y = 40;
+  MAP_SIZE_Y = 80;
 
   grhythm = 4;
 
@@ -73,7 +73,7 @@
         if (game.input.up) {
           pdir = 3;
         }
-        if (pdir === 0 && map.y > game.bs * -28) {
+        if (pdir === 0 && map.y > game.bs * (MAP_SIZE_Y - 13) * -1) {
           map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(function() {
             return player.frame = 0 + (pdir * 9);
           }).then(function() {
@@ -82,7 +82,7 @@
             return player.frame = 2 + (pdir * 9);
           });
         }
-        if (pdir === 1 && player.x < game.bs * (MAP_SIZE_X - 3)) {
+        if (pdir === 1 && map.x < player.x) {
           map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(function() {
             return player.frame = 0 + (pdir * 9);
           }).then(function() {
@@ -91,7 +91,7 @@
             return player.frame = 2 + (pdir * 9);
           });
         }
-        if (pdir === 2 && player.x > game.bs) {
+        if (pdir === 2 && map.x > game.bs * (MAP_SIZE_X - 12) * -1) {
           map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(function() {
             return player.frame = 0 + (pdir * 9);
           }).then(function() {
@@ -109,7 +109,7 @@
             return player.frame = 2 + (pdir * 9);
           });
         }
-        console.log('map.x =' + map.x + ', map.y =' + map.y);
+        console.log('map.x =' + map.x + ', map.y =' + map.y + 'player.x =' + player.x + ', player.y =' + player.y);
       }
     });
   };
