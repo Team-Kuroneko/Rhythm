@@ -189,7 +189,18 @@ main = ->
         [1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1]
     ]
     game.rootScene.addChild map
+    lbl = new Label('クリックした座標位置')
+    lbl.moveTo 10, 170
+    game.rootScene.addChild lbl
+    lbl2 = new Label('hitTest()')
+    lbl2.moveTo 10, 190
+    game.rootScene.addChild lbl2
+    game.rootScene.ontouchstart = (e) ->
+      lbl.text = 'クリックした座標位置 (' + parseInt(e.x) + ', ' + parseInt(e.y) + ')'
+    #  lbl2.text = 'hitTest(' + map.hitTest(e.x-map.x, e.y-map.y) + ')' + player.x + '*' +player.y + '*'  
+      lbl2.text = 'hitTest(' + map.hitTest(160-map.x, 186-map.y) + ')' + player.x + '*' +player.y + '*'  
     
+    #144 160の位置が固定らしい。キャラクター。そこでこの値をどうにかして
     player = new Sprite(game.bs * 2, game.bs * 2)
     player.image = game.assets[IMG_CHARA0_PATH]
     player.x = game.bs * 9
@@ -235,7 +246,7 @@ main = ->
                     player.frame = 1 + (pdir * 9)).then(->
                     player.frame = 2 + (pdir * 9))
             if pdir is 1 and map.x < player.x
-                # map.x += game.bs
+               #  map.x += game.bs
                 map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
                     player.frame = 0 + (pdir * 9)).then(->
                     player.frame = 1 + (pdir * 9)).then(->
