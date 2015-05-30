@@ -10,7 +10,7 @@ game = null
 gtime = 0
 MAP_SIZE_X = 80
 MAP_SIZE_Y = 80
-grhythm = 4
+grhythm = 1
 pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
 
 # ロードが完了した直後に実行される関数。
@@ -188,15 +188,24 @@ main = ->
         [1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1],
         [1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1]
     ]
+    map.x += game.bs * 2
+    map.y += game.bs * 4
     game.rootScene.addChild map
     
     player = new Sprite(game.bs * 2, game.bs * 2)
     player.image = game.assets[IMG_CHARA0_PATH]
-    player.x = game.bs * 9
+    player.x = game.bs * 9 - 8
     player.y = game.bs * 10
     player.frame = 0
     
     game.rootScene.addChild player
+    
+    # ラベル
+    text = new Label('判定')
+    text.x = 0
+    text.y = 0
+    text.color = 'white'
+    game.rootScene.addChild text
 
     ###
     player.addEventListener Event.ENTER_FRAME, ->
@@ -218,42 +227,57 @@ main = ->
         if gtime % (game.fps / grhythm) is 0
             # キャラをぴょんぴょん
             player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3)
+            
+            # px = Math.ceil(Math.abs(map.x) / game.bs) + 9
+            # py = Math.ceil(Math.abs(map.y) / game.bs) + 10
+            px = if map.x > 0 then  9 - Math.ceil(Math.round(map.x) / game.bs) else if map.x is 0 then map.x +  9 else Math.round(Math.abs(map.x) / game.bs) + 9
+            py = if map.y > 0 then 11 - Math.ceil(Math.round(map.y) / game.bs) else if map.y is 0 then map.y + 11 else Math.round(Math.abs(map.y) / game.bs) + 11
 
             if game.input.down
                 pdir = 0
+                py += 1
             if game.input.left
                 pdir = 1
+                px -= 1
             if game.input.right
                 pdir = 2
+                px += 1
             if game.input.up
                 pdir = 3
+                py -= 1
 
-            if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
-                # map.y -= game.bs
-                map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
-                    player.frame = 0 + (pdir * 9)).then(->
-                    player.frame = 1 + (pdir * 9)).then(->
-                    player.frame = 2 + (pdir * 9))
-            if pdir is 1 and map.x < player.x
-                # map.x += game.bs
-                map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
-                    player.frame = 0 + (pdir * 9)).then(->
-                    player.frame = 1 + (pdir * 9)).then(->
-                    player.frame = 2 + (pdir * 9))
-            if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 12) * -1
-                # map.x -= game.bs
-                map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
-                    player.frame = 0 + (pdir * 9)).then(->
-                    player.frame = 1 + (pdir * 9)).then(->
-                    player.frame = 2 + (pdir * 9))
-            if pdir is 3 and map.y < player.y
-                # map.y += game.bs
-                map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(->
-                    player.frame = 0 + (pdir * 9)).then(->
-                    player.frame = 1 + (pdir * 9)).then(->
-                    player.frame = 2 + (pdir * 9))
+            # if map.hitTest(map.x - player.x, map.y - player.y) is true
+            if map.hitTest(px * game.bs, py * game.bs) is true
+                text.text = '判定(' + px + ',' + py + ')：' + 'true'
+            else
+                text.text = '判定(' + px + ',' + py + ')：' + 'false'
             
-            console.log('map.x =' + map.x + ', map.y =' + map.y + 'player.x =' + player.x + ', player.y =' + player.y)
+                if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
+                    # map.y -= game.bs
+                    map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
+                        player.frame = 0 + (pdir * 9)).then(->
+                        player.frame = 1 + (pdir * 9)).then(->
+                        player.frame = 2 + (pdir * 9))
+                if pdir is 1 and map.x < player.x
+                    # map.x += game.bs
+                    map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
+                        player.frame = 0 + (pdir * 9)).then(->
+                        player.frame = 1 + (pdir * 9)).then(->
+                        player.frame = 2 + (pdir * 9))
+                if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 11) * -1
+                    # map.x -= game.bs
+                    map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
+                        player.frame = 0 + (pdir * 9)).then(->
+                        player.frame = 1 + (pdir * 9)).then(->
+                        player.frame = 2 + (pdir * 9))
+                if pdir is 3 and map.y < player.y
+                    # map.y += game.bs
+                    map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(->
+                        player.frame = 0 + (pdir * 9)).then(->
+                        player.frame = 1 + (pdir * 9)).then(->
+                        player.frame = 2 + (pdir * 9))
+
+            console.log('map.x =' + map.x + ', map.y =' + map.y + ',player.x =' + player.x + ', player.y =' + player.y)
 
         return
     
