@@ -6,12 +6,14 @@ IMG_CHARA1_PATH = './images/chara1.png'
 IMG_ICON1_PATH = './images/icon1.png'
 IMG_MAP0_PATH = './images/map0.gif'
 IMG_MAP2_PATH = './images/map2.png'
+IMG_PAD = './images/pad2.png'
 game = null
 gtime = 0
 MAP_SIZE_X = 80
 MAP_SIZE_Y = 80
 grhythm = 1
 pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
+padtime = 0
 
 # ロードが完了した直後に実行される関数。
 main = -> 
@@ -200,6 +202,12 @@ main = ->
     
     game.rootScene.addChild player
     
+    pad = new Sprite(100,100)
+    pad.image = game.assets[IMG_PAD]
+    pad.x = 200
+    pad.y = 200
+    pad.frame = 0
+    game.rootScene.addChild pad
     # ラベル
     text = new Label('判定')
     text.x = 0
@@ -220,11 +228,18 @@ main = ->
         
         return 
     ###
-
-    game.rootScene.addEventListener Event.ENTER_FRAME, ->
-        gtime += 1
+    
+    game.rootScene.addEventListener Event.ENTER_FRAME, ->#おこなったときに呼び出される一秒間に24回
+        gtime += 1#時間のカウント24回カウント
         #この中にいろいろな判定を付け加える
-        if gtime % (game.fps / grhythm) is 0
+        padtime += 1
+        if padtime is 24
+            pad.frame = 1
+            padtime = 0
+        else
+            pad.frame = 0    
+            
+        if gtime % (game.fps / grhythm) is 0#あまりゼロだと以下の処理
             # キャラをぴょんぴょん
             player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3)
             
@@ -232,7 +247,7 @@ main = ->
             # py = Math.ceil(Math.abs(map.y) / game.bs) + 10
             px = if map.x > 0 then  9 - Math.ceil(Math.round(map.x) / game.bs) else if map.x is 0 then map.x +  9 else Math.round(Math.abs(map.x) / game.bs) + 9
             py = if map.y > 0 then 11 - Math.ceil(Math.round(map.y) / game.bs) else if map.y is 0 then map.y + 11 else Math.round(Math.abs(map.y) / game.bs) + 11
-
+            
             if game.input.down
                 pdir = 0
                 py += 1
@@ -290,7 +305,7 @@ main = ->
 init = ->
     game = new Core(320, 320)
     # 素材をプリロードする
-    game.preload IMG_CHARA0_PATH ,IMG_CHARA1_PATH ,IMG_ICON1_PATH ,IMG_MAP0_PATH ,IMG_MAP2_PATH
+    game.preload IMG_CHARA0_PATH ,IMG_CHARA1_PATH ,IMG_ICON1_PATH ,IMG_MAP0_PATH ,IMG_MAP2_PATH ,IMG_PAD
     game.bs = 16
     game.fps = 24
     game.onload = main

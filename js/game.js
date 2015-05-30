@@ -1,5 +1,5 @@
 (function() {
-  var IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, MAP_SIZE_X, MAP_SIZE_Y, game, grhythm, gtime, init, main, pdir;
+  var IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, IMG_PAD, MAP_SIZE_X, MAP_SIZE_Y, game, grhythm, gtime, init, main, padtime, pdir;
 
   enchant();
 
@@ -13,6 +13,8 @@
 
   IMG_MAP2_PATH = './images/map2.png';
 
+  IMG_PAD = './images/pad2.png';
+
   game = null;
 
   gtime = 0;
@@ -25,8 +27,10 @@
 
   pdir = 0;
 
+  padtime = 0;
+
   main = function() {
-    var map, mapArray, player, text;
+    var map, mapArray, pad, player, text;
     game.rootScene.backgroundColor = "#000000";
     console.log('map');
     map = new Map(16, 16);
@@ -45,6 +49,12 @@
     player.y = game.bs * 10;
     player.frame = 0;
     game.rootScene.addChild(player);
+    pad = new Sprite(100, 100);
+    pad.image = game.assets[IMG_PAD];
+    pad.x = 200;
+    pad.y = 200;
+    pad.frame = 0;
+    game.rootScene.addChild(pad);
     text = new Label('判定');
     text.x = 0;
     text.y = 0;
@@ -67,6 +77,13 @@
     game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
       var px, py;
       gtime += 1;
+      padtime += 1;
+      if (padtime === 24) {
+        pad.frame = 1;
+        padtime = 0;
+      } else {
+        pad.frame = 0;
+      }
       if (gtime % (game.fps / grhythm) === 0) {
         player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3);
         px = map.x > 0 ? 9 - Math.ceil(Math.round(map.x) / game.bs) : map.x === 0 ? map.x + 9 : Math.round(Math.abs(map.x) / game.bs) + 9;
@@ -135,7 +152,7 @@
 
   init = function() {
     game = new Core(320, 320);
-    game.preload(IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH);
+    game.preload(IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, IMG_PAD);
     game.bs = 16;
     game.fps = 24;
     game.onload = main;
