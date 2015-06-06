@@ -1,7 +1,7 @@
 #   cfcoptions : { "out": "../js/"   }
 enchant()
 
-IMG_CHARA0_PATH = './images/chara0.png'
+IMG_CHARA0_PATH = './images/main_chara.png'
 IMG_CHARA1_PATH = './images/chara1.png'
 IMG_ICON1_PATH = './images/icon1.png'
 IMG_MAP0_PATH = './images/map0.gif'
@@ -28,6 +28,10 @@ keika = 0
 keikacnt = 0
 keyTime = 0
 onefrm = 0
+
+#charaのフレーム
+frameNum = 0
+frameTimecount = 0
 
 
 # ロードが完了した直後に実行される関数。
@@ -209,7 +213,7 @@ main = ->
     map.y += game.bs * 4
     game.rootScene.addChild map
     
-    player = new Sprite(game.bs * 2, game.bs * 2)
+    player = new Sprite(16, 24)
     player.image = game.assets[IMG_CHARA0_PATH]
     player.x = game.bs * 9 - 8
     player.y = game.bs * 10
@@ -287,9 +291,10 @@ main = ->
         #この中にいろいろな判定を付け加える
         if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
         # if gtime % (game.fps / grhythm) is 0
-
+            frameTimecount++
+            
             # キャラをぴょんぴょん
-            player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3)
+            player.tl.moveBy(0, -1, 3).moveBy(0, 1, 3)
             
             # px = Math.ceil(Math.abs(map.x) / game.bs) + 9
             # py = Math.ceil(Math.abs(map.y) / game.bs) + 10
@@ -308,6 +313,12 @@ main = ->
             if game.input.up
                 pdir = 3
                 py -= 1
+            if frameTimecount == 4
+                frameTimecount = 0
+            
+            frameNum = frameTimecount + (pdir * 4)
+            player.frame = frameNum    
+            
 
             # if map.hitTest(map.x - player.x, map.y - player.y) is true
             if map.hitTest(px * game.bs, py * game.bs) is true
@@ -318,27 +329,31 @@ main = ->
                 if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
                     # map.y -= game.bs
                     map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
-                        player.frame = 0 + (pdir * 9)).then(->
-                        player.frame = 1 + (pdir * 9)).then(->
-                        player.frame = 2 + (pdir * 9))
+                #        player.frame = 0 + (pdir * 4)).then(->
+                 #       player.frame = 1 + (pdir * 4)).then(->
+                  #      player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 1 and map.x < player.x
                     # map.x += game.bs
                     map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
-                        player.frame = 0 + (pdir * 9)).then(->
-                        player.frame = 1 + (pdir * 9)).then(->
-                        player.frame = 2 + (pdir * 9))
+                #        player.frame = 0 + (pdir * 4)).then(->
+                 #       player.frame = 1 + (pdir * 4)).then(->
+                  #      player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 11) * -1
                     # map.x -= game.bs
                     map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
-                        player.frame = 0 + (pdir * 9)).then(->
-                        player.frame = 1 + (pdir * 9)).then(->
-                        player.frame = 2 + (pdir * 9))
+                #        player.frame = 0 + (pdir * 4)).then(->
+                 #       player.frame = 1 + (pdir * 4)).then(->
+                  #      player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 3 and map.y < player.y
                     # map.y += game.bs
                     map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(->
-                        player.frame = 0 + (pdir * 9)).then(->
-                        player.frame = 1 + (pdir * 9)).then(->
-                        player.frame = 2 + (pdir * 9))
+                #        player.frame = 0 + (pdir * 4)).then(->
+                 #       player.frame = 1 + (pdir * 4)).then(->
+                  #      player.frame = 2 + (pdir * 4))
+                                                      )
 
             console.log('map.x =' + map.x + ', map.y =' + map.y + ',player.x =' + player.x + ', player.y =' + player.y)
 

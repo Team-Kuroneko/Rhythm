@@ -1,9 +1,9 @@
 (function() {
-  var IMG_BAR_PATH, IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, MAP_SIZE_X, MAP_SIZE_Y, bpm, bpmsec, firstTime, game, good, great, grhythm, gtime, init, keika, keikacnt, keyTime, main, miss, newTime, oldTime, onefrm, pdir, success;
+  var IMG_BAR_PATH, IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, MAP_SIZE_X, MAP_SIZE_Y, bpm, bpmsec, firstTime, frameNum, frameTimecount, game, good, great, grhythm, gtime, init, keika, keikacnt, keyTime, main, miss, newTime, oldTime, onefrm, pdir, success;
 
   enchant();
 
-  IMG_CHARA0_PATH = './images/chara0.png';
+  IMG_CHARA0_PATH = './images/main_chara.png';
 
   IMG_CHARA1_PATH = './images/chara1.png';
 
@@ -53,6 +53,10 @@
 
   onefrm = 0;
 
+  frameNum = 0;
+
+  frameTimecount = 0;
+
   main = function() {
     var bar, map, mapArray, player, text, time;
     game.rootScene.backgroundColor = "#000000";
@@ -67,7 +71,7 @@
     map.x += game.bs * 2;
     map.y += game.bs * 4;
     game.rootScene.addChild(map);
-    player = new Sprite(game.bs * 2, game.bs * 2);
+    player = new Sprite(16, 24);
     player.image = game.assets[IMG_CHARA0_PATH];
     player.x = game.bs * 9 - 8;
     player.y = game.bs * 10;
@@ -122,7 +126,8 @@
       gtime += 1;
       bar.width = game.bs / 2 * Math.floor((keika % bpmsec) / onefrm);
       if (((onefrm / 2) >= (_ref = keika % bpmsec) && _ref >= 0) || (keika % bpmsec) > (bpmsec - (onefrm / 2))) {
-        player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3);
+        frameTimecount++;
+        player.tl.moveBy(0, -1, 3).moveBy(0, 1, 3);
         px = map.x > 0 ? 9 - Math.ceil(Math.round(map.x) / game.bs) : map.x === 0 ? map.x + 9 : Math.round(Math.abs(map.x) / game.bs) + 9;
         py = map.y > 0 ? 11 - Math.ceil(Math.round(map.y) / game.bs) : map.y === 0 ? map.y + 11 : Math.round(Math.abs(map.y) / game.bs) + 11;
         if (game.input.down) {
@@ -141,44 +146,25 @@
           pdir = 3;
           py -= 1;
         }
+        if (frameTimecount === 4) {
+          frameTimecount = 0;
+        }
+        frameNum = frameTimecount + (pdir * 4);
+        player.frame = frameNum;
         if (map.hitTest(px * game.bs, py * game.bs) === true) {
 
         } else {
           if (pdir === 0 && map.y > game.bs * (MAP_SIZE_Y - 13) * -1) {
-            map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(function() {
-              return player.frame = 0 + (pdir * 9);
-            }).then(function() {
-              return player.frame = 1 + (pdir * 9);
-            }).then(function() {
-              return player.frame = 2 + (pdir * 9);
-            });
+            map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(function() {});
           }
           if (pdir === 1 && map.x < player.x) {
-            map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(function() {
-              return player.frame = 0 + (pdir * 9);
-            }).then(function() {
-              return player.frame = 1 + (pdir * 9);
-            }).then(function() {
-              return player.frame = 2 + (pdir * 9);
-            });
+            map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(function() {});
           }
           if (pdir === 2 && map.x > game.bs * (MAP_SIZE_X - 11) * -1) {
-            map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(function() {
-              return player.frame = 0 + (pdir * 9);
-            }).then(function() {
-              return player.frame = 1 + (pdir * 9);
-            }).then(function() {
-              return player.frame = 2 + (pdir * 9);
-            });
+            map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(function() {});
           }
           if (pdir === 3 && map.y < player.y) {
-            map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(function() {
-              return player.frame = 0 + (pdir * 9);
-            }).then(function() {
-              return player.frame = 1 + (pdir * 9);
-            }).then(function() {
-              return player.frame = 2 + (pdir * 9);
-            });
+            map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(function() {});
           }
         }
         console.log('map.x =' + map.x + ', map.y =' + map.y + ',player.x =' + player.x + ', player.y =' + player.y);
