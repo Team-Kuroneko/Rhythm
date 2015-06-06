@@ -1,5 +1,5 @@
 (function() {
-  var IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, MAP_SIZE_X, MAP_SIZE_Y, game, grhythm, gtime, init, main, pdir;
+  var IMG_BAR_PATH, IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, MAP_SIZE_X, MAP_SIZE_Y, bpm, bpmsec, firstTime, game, good, great, grhythm, gtime, init, keika, keikacnt, keyTime, main, miss, newTime, oldTime, onefrm, pdir, success;
 
   enchant();
 
@@ -13,6 +13,8 @@
 
   IMG_MAP2_PATH = './images/map2.png';
 
+  IMG_BAR_PATH = './images/bar.png';
+
   game = null;
 
   gtime = 0;
@@ -21,12 +23,38 @@
 
   MAP_SIZE_Y = 80;
 
-  grhythm = 1;
+  grhythm = 2;
 
   pdir = 0;
 
+  great = 50;
+
+  good = 50;
+
+  miss = 100;
+
+  success = 0;
+
+  bpm = 120;
+
+  bpmsec = Math.floor(1000 / (bpm / 60));
+
+  firstTime = null;
+
+  oldTime = null;
+
+  newTime = null;
+
+  keika = 0;
+
+  keikacnt = 0;
+
+  keyTime = 0;
+
+  onefrm = 0;
+
   main = function() {
-    var map, mapArray, player, text;
+    var bar, map, mapArray, player, text, time;
     game.rootScene.backgroundColor = "#000000";
     console.log('map');
     map = new Map(16, 16);
@@ -45,29 +73,55 @@
     player.y = game.bs * 10;
     player.frame = 0;
     game.rootScene.addChild(player);
+    bar = new Sprite(1, 16);
+    bar.image = game.assets[IMG_BAR_PATH];
+    bar.x = 96;
+    bar.y = 0;
+    game.rootScene.addChild(bar);
     text = new Label('判定');
     text.x = 0;
-    text.y = 0;
+    text.y = 16;
     text.color = 'white';
     game.rootScene.addChild(text);
-
-    /*
-    player.addEventListener Event.ENTER_FRAME, ->
-        if game.input.down
-            pdir = 0
-        if game.input.left
-            pdir = 1
-        if game.input.right
-            pdir = 2
-        if game.input.up
-            pdir = 3
-        
-        return
-     */
+    time = new Label('time');
+    time.x = 0;
+    time.y = 0;
+    time.color = 'white';
+    game.rootScene.addChild(time);
     game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
-      var px, py;
+      var inp, keyFrame, px, py, _ref;
+      newTime = new Date;
+      keika += newTime.getTime() - oldTime.getTime();
+      if (game.input.down || game.input.left || game.input.right || game.input.up) {
+        keyTime = (new Date).getTime() - firstTime.getTime();
+      } else {
+        keyTime = 0;
+      }
+      oldTime = newTime;
+      keyFrame = keyTime % bpmsec;
+      if (keyTime === 0) {
+        success = 0;
+      } else if ((great >= keyFrame && keyFrame >= 0) || keyFrame > bpmsec - great) {
+        success = 1;
+      } else if ((great + good >= keyFrame && keyFrame >= 0) || keyFrame > bpmsec - great - good) {
+        success = 2;
+      } else {
+        success = 3;
+      }
+      if (success === 0) {
+        inp = '未入力';
+      } else if (success === 1) {
+        inp = 'Great!!';
+      } else if (success === 2) {
+        inp = 'Good!!';
+      } else if (success === 3) {
+        inp = 'Miss!!';
+      }
+      text.text = '判定：' + inp;
+      keyTime = 0;
       gtime += 1;
-      if (gtime % (game.fps / grhythm) === 0) {
+      bar.width = game.bs / 2 * Math.floor((keika % bpmsec) / onefrm);
+      if (((onefrm / 2) >= (_ref = keika % bpmsec) && _ref >= 0) || (keika % bpmsec) > (bpmsec - (onefrm / 2))) {
         player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3);
         px = map.x > 0 ? 9 - Math.ceil(Math.round(map.x) / game.bs) : map.x === 0 ? map.x + 9 : Math.round(Math.abs(map.x) / game.bs) + 9;
         py = map.y > 0 ? 11 - Math.ceil(Math.round(map.y) / game.bs) : map.y === 0 ? map.y + 11 : Math.round(Math.abs(map.y) / game.bs) + 11;
@@ -88,9 +142,8 @@
           py -= 1;
         }
         if (map.hitTest(px * game.bs, py * game.bs) === true) {
-          text.text = '判定(' + px + ',' + py + ')：' + 'true';
+
         } else {
-          text.text = '判定(' + px + ',' + py + ')：' + 'false';
           if (pdir === 0 && map.y > game.bs * (MAP_SIZE_Y - 13) * -1) {
             map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(function() {
               return player.frame = 0 + (pdir * 9);
@@ -135,11 +188,15 @@
 
   init = function() {
     game = new Core(320, 320);
-    game.preload(IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH);
+    game.preload(IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, IMG_BAR_PATH);
     game.bs = 16;
     game.fps = 24;
+    onefrm = Math.floor(1000 / game.fps);
     game.onload = main;
     game.start();
+    firstTime = new Date;
+    oldTime = firstTime;
+    keikacnt = 0;
     gtime = 0;
   };
 
