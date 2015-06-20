@@ -1,19 +1,39 @@
 #   cfcoptions : { "out": "../js/"   }
 enchant()
 
-IMG_CHARA0_PATH = './images/chara0.png'
+IMG_CHARA0_PATH = './images/main_chara.png'
 IMG_CHARA1_PATH = './images/chara1.png'
 IMG_ICON1_PATH = './images/icon1.png'
 IMG_MAP0_PATH = './images/map0.gif'
 IMG_MAP2_PATH = './images/map2.png'
 IMG_PAD = './images/pad2.png'
+IMG_BAR_PATH = './images/bar.png'
 game = null
 gtime = 0
 MAP_SIZE_X = 80
 MAP_SIZE_Y = 80
-grhythm = 1
+grhythm = 2
 pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
 padtime = 0
+great = 50 # グレートの判定
+good = 50 # グッドの判定
+miss = 100 # ミスの判定
+success = 0 # 入力判定の成否 0：未入力 1：グレート 2：グッド 3：ミス
+
+# BPM関連
+bpm = 120
+bpmsec = Math.floor(1000 / (bpm / 60)) # 1テンポnミリ秒か
+firstTime = null
+oldTime = null
+newTime = null
+keika = 0
+keikacnt = 0
+keyTime = 0
+onefrm = 0
+
+#charaのフレーム
+frameNum = 0
+frameTimecount = 0
 
 # ロードが完了した直後に実行される関数。
 main = -> 
@@ -194,7 +214,7 @@ main = ->
     map.y += game.bs * 4
     game.rootScene.addChild map
     
-    player = new Sprite(game.bs * 2, game.bs * 2)
+    player = new Sprite(16, 24)
     player.image = game.assets[IMG_CHARA0_PATH]
     player.x = game.bs * 9 - 8
     player.y = game.bs * 10
@@ -208,29 +228,29 @@ main = ->
     pad.y = 200
     pad.frame = 0
     game.rootScene.addChild pad
+
+    bar = new Sprite(1, 16)
+    bar.image = game.assets[IMG_BAR_PATH]
+    bar.x = 96
+    bar.y = 0
+    game.rootScene.addChild bar
+    
     # ラベル
     text = new Label('判定')
     text.x = 0
-    text.y = 0
+    text.y = 16
     text.color = 'white'
     game.rootScene.addChild text
+    # ラベル
+    time = new Label('time')
+    time.x = 0
+    time.y = 0
+    time.color = 'white'
+    game.rootScene.addChild time
 
-    ###
-    player.addEventListener Event.ENTER_FRAME, ->
-        if game.input.down
-            pdir = 0
-        if game.input.left
-            pdir = 1
-        if game.input.right
-            pdir = 2
-        if game.input.up
-            pdir = 3
+    # ルートシーンのフレーム処理
+    game.rootScene.addEventListener Event.ENTER_FRAME, ->
         
-        return 
-    ###
-    
-    game.rootScene.addEventListener Event.ENTER_FRAME, ->#おこなったときに呼び出される一秒間に24回
-        gtime += 1#時間のカウント24回カウント
         #この中にいろいろな判定を付け加える
         padtime += 1
         if padtime is 24
@@ -238,10 +258,59 @@ main = ->
             padtime = 0
         else
             pad.frame = 0    
+        
+        # 現在の時間を取得
+        newTime = new Date
+        # 経過時間の測定
+        keika += newTime.getTime() - oldTime.getTime()
+
+        # キー入力されていた場合の時間を取得
+        if game.input.down or game.input.left or game.input.right or game.input.up
+            keyTime = (new Date).getTime() - firstTime.getTime()
+        else
+            keyTime = 0
+
+        oldTime = newTime
+        
+        keyFrame = keyTime % bpmsec
+
+        # 入力タイミングの判定
+        if keyTime is 0 # 未入力
+            success = 0
+        # Great
+        else if great >= keyFrame >= 0 or keyFrame > bpmsec - great
+            success = 1
+        # Good
+        else if great + good >= keyFrame >= 0 or keyFrame > bpmsec - great - good
+            success = 2
+        # Miss
+        else 
+            success = 3
+        
+        if success is 0 
+            inp = '未入力' 
+        else if success is 1
+            inp = 'Great!!' 
+        else if success is 2 
+            inp = 'Good!!' 
+        else if success is 3 
+            inp = 'Miss!!'
+        
+        text.text = '判定：' + inp
+        keyTime = 0
+
+        gtime += 1
+        
+        # バーを動かす
+        bar.width = game.bs / 2 * Math.floor((keika % bpmsec) / onefrm)
+
+        #この中にいろいろな判定を付け加える
+        if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
+        # if gtime % (game.fps / grhythm) is 0
+            frameTimecount++
             
-        if gtime % (game.fps / grhythm) is 0#あまりゼロだと以下の処理
             # キャラをぴょんぴょん
-            player.tl.moveBy(0, -5, 3).moveBy(0, 5, 3)
+            player.tl.moveBy(0, -1, 3).moveBy(0, 1, 3)
             
             # px = Math.ceil(Math.abs(map.x) / game.bs) + 9
             # py = Math.ceil(Math.abs(map.y) / game.bs) + 10
@@ -260,37 +329,47 @@ main = ->
             if game.input.up
                 pdir = 3
                 py -= 1
+            if frameTimecount == 4
+                frameTimecount = 0
+            
+            frameNum = frameTimecount + (pdir * 4)
+            player.frame = frameNum    
+            
 
             # if map.hitTest(map.x - player.x, map.y - player.y) is true
             if map.hitTest(px * game.bs, py * game.bs) is true
-                text.text = '判定(' + px + ',' + py + ')：' + 'true'
+                # text.text = '判定(' + px + ',' + py + ')：' + 'true'
             else
-                text.text = '判定(' + px + ',' + py + ')：' + 'false'
+                # text.text = '判定(' + px + ',' + py + ')：' + 'false'
             
                 if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
                     # map.y -= game.bs
                     map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
-                        player.frame = 0 + (pdir * 9)).then(->
-                        player.frame = 1 + (pdir * 9)).then(->
-                        player.frame = 2 + (pdir * 9))
+#                        player.frame = 0 + (pdir * 4)).then(->
+#                        player.frame = 1 + (pdir * 4)).then(->
+#                        player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 1 and map.x < player.x
                     # map.x += game.bs
                     map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
-                        player.frame = 0 + (pdir * 9)).then(->
-                        player.frame = 1 + (pdir * 9)).then(->
-                        player.frame = 2 + (pdir * 9))
+#                        player.frame = 0 + (pdir * 4)).then(->
+#                        player.frame = 1 + (pdir * 4)).then(->
+#                        player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 11) * -1
                     # map.x -= game.bs
                     map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
-                        player.frame = 0 + (pdir * 9)).then(->
-                        player.frame = 1 + (pdir * 9)).then(->
-                        player.frame = 2 + (pdir * 9))
+#                        player.frame = 0 + (pdir * 4)).then(->
+#                        player.frame = 1 + (pdir * 4)).then(->
+#                        player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 3 and map.y < player.y
                     # map.y += game.bs
                     map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(->
-                        player.frame = 0 + (pdir * 9)).then(->
-                        player.frame = 1 + (pdir * 9)).then(->
-                        player.frame = 2 + (pdir * 9))
+#                        player.frame = 0 + (pdir * 4)).then(->
+#                        player.frame = 1 + (pdir * 4)).then(->
+#                        player.frame = 2 + (pdir * 4))
+                                                      )
 
             console.log('map.x =' + map.x + ', map.y =' + map.y + ',player.x =' + player.x + ', player.y =' + player.y)
 
@@ -301,17 +380,21 @@ main = ->
 
 
 
-
 init = ->
     game = new Core(320, 320)
     # 素材をプリロードする
-    game.preload IMG_CHARA0_PATH ,IMG_CHARA1_PATH ,IMG_ICON1_PATH ,IMG_MAP0_PATH ,IMG_MAP2_PATH ,IMG_PAD
+    game.preload IMG_CHARA0_PATH ,IMG_CHARA1_PATH ,IMG_ICON1_PATH ,IMG_MAP0_PATH ,IMG_MAP2_PATH, IMG_PAD, IMG_BAR_PATH
     game.bs = 16
     game.fps = 24
+    onefrm = Math.floor(1000 / game.fps)
     game.onload = main
     # ゲームを開始する。
     game.start()
+    firstTime = new Date
+    oldTime = firstTime
+    keikacnt = 0
     gtime = 0
+
     return 
 
 window.onload = init
