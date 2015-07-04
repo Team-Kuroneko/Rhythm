@@ -19,8 +19,10 @@ MAP_SIZE_Y = 80
 grhythm = 2
 
 player = null
+map = null
 enemyList = []
 enemyPos = null
+enemyMap = null
 
 pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
 padtime = 0
@@ -222,26 +224,26 @@ main = ->
         [1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1],
         [1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0]
     ]
-    map.x += game.bs * 2
-    map.y += game.bs * 4
-    game.rootScene.addChild map
+    #map.x += game.bs * 2
+    #map.y += game.bs * 4
+    #game.rootScene.addChild map
     
     # 敵キャラの初期位置
     enemyPos = [
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -309,6 +311,18 @@ main = ->
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     ]
+    #敵キャラ衝突判定MAPオブジェクト作成
+    enemyMap = new Map(16, 16)
+    enemyMap.image = game.assets[IMG_MAP0_PATH]
+    enemyArray = new Array(MAP_SIZE_Y - 1)
+    for i in [0...MAP_SIZE_Y]
+        aryX = new Array(MAP_SIZE_X - 1)
+        for j in [0...MAP_SIZE_X]
+            aryX[j] = -1
+        enemyArray[i] = aryX
+    enemyMap.loadData enemyArray
+    enemyMap.collisionData = enemyPos
+    
     pointX = 0
     pointY = 0
     for dataIniColY in map.collisionData
@@ -324,6 +338,11 @@ main = ->
     map.x = -pointX*16+game.bs*9+16#同上
     
     game.rootScene.addChild map
+    
+    #敵キャラ衝突判定MAP追加
+    enemyMap.x = map.x
+    enemyMap.y = map.y
+    game.rootScene.addChild enemyMap
     
     player = new Sprite(16, 24)
     player.image = game.assets[IMG_CHARA0_PATH]
@@ -355,11 +374,12 @@ main = ->
             if data isnt 0
                 enemy = new Sprite(16, 24)
                 enemy.image = game.assets[IMG_MONSTER_SKE_PATH]
-                enemy.x = game.bs * posX + game.bs * 2
-                enemy.y = game.bs * posY + game.bs * 4
+                enemy.x = map.x + game.bs * posX
+                enemy.y = map.y + game.bs * posY
                 enemy.frame = 0
                 game.rootScene.addChild enemy
                 enemyList.push enemy
+                #enemyMap.collisionData[posY][posX] = 1
             posX++
         posY++
     
@@ -470,77 +490,32 @@ main = ->
                 if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
                     # map.y -= game.bs
                     keypadMemory = 0
-                    map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
-                   #     player.frame = num).then(->
-                    #    player.frame = 0 + (pdir * 4)).then(->
-                     #   player.frame = 1 + (pdir * 4)).then(->
-                      #  player.frame = 2 + (pdir * 4))
-                                                      )
+                    moveMap 0, game.bs * -1, game.fps / grhythm
                 if pdir is 1 and map.x < player.x
-                   #  map.x += game.bs
+                    #  map.x += game.bs
                     keypadMemory = 1
-                    map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
-                     #   player.frame = 0 + (pdir * 4)).then(->
-                      #  player.frame = 1 + (pdir * 4)).then(->
-                       # player.frame = 2 + (pdir * 4))
-                                                      )
+                    moveMap game.bs, 0, game.fps / grhythm
                 if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 12) * -1
                     # map.x -= game.bs
                     keypadMemory = 2
-                    map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
-                        #player.frame = 0 + (pdir * 4)).then(->
-                    #    player.frame = 1 + (pdir * 4)).then(->
-                     #   player.frame = 2 + (pdir * 4))
-                                                      )
+                    moveMap game.bs * -1, 0, game.fps / grhythm
                 if pdir is 3 and map.y < player.y
                     # map.y += game.bs
                     keypadMemory = 3
-                    map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(->
-                    #    player.frame = 0 + (pdir * 4)).then(->
-                     #   player.frame = 1 + (pdir * 4)).then(->
-                      #  player.frame = 2 + (pdir * 4))
-                                                      )
-                # text.text = '判定(' + px + ',' + py + ')：' + 'true'
+                    moveMap 0, game.bs, game.fps / grhythm
             else
-                
-                # text.text = '判定(' + px + ',' + py + ')：' + 'false'
-
                 if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
                     # map.y -= game.bs
-                    map.tl.moveBy(0, game.bs * 1, game.fps / grhythm).and().then(->
-    #                        player.frame = 0 + (pdir * 4)).then(->
-    #                        player.frame = 1 + (pdir * 4)).then(->
-    #                        player.frame = 2 + (pdir * 4))
-                                                          )
-                    for enemy in enemyList
-                        enemy.tl.moveBy(0, game.bs * -1, game.fps / grhythm)
+                    moveMap 0, game.bs * 1, game.fps / grhythm
                 if pdir is 1 and map.x < player.x
                     # map.x += game.bs
-                    map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
-    #                        player.frame = 0 + (pdir * 4)).then(->
-    #                        player.frame = 1 + (pdir * 4)).then(->
-    #                        player.frame = 2 + (pdir * 4))
-                                                          )
-                    for enemy in enemyList
-                        enemy.tl.moveBy(game.bs, 0, game.fps / grhythm)
+                    moveMap game.bs * -1, 0, game.fps / grhythm
                 if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 11) * -1
                     # map.x -= game.bs
-                    map.tl.moveBy(game.bs * 1, 0, game.fps / grhythm).and().then(->
-    #                        player.frame = 0 + (pdir * 4)).then(->
-    #                        player.frame = 1 + (pdir * 4)).then(->
-    #                        player.frame = 2 + (pdir * 4))
-                                                          )
-                    for enemy in enemyList
-                        enemy.tl.moveBy(game.bs * -1, 0, game.fps / grhythm)
+                    moveMap game.bs * 1, 0, game.fps / grhythm
                 if pdir is 3 and map.y < player.y
                     # map.y += game.bs
-                    map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
-    #                        player.frame = 0 + (pdir * 4)).then(->
-    #                        player.frame = 1 + (pdir * 4)).then(->
-    #                        player.frame = 2 + (pdir * 4))
-                                                          )
-                    for enemy in enemyList
-                        enemy.tl.moveBy(0, game.bs, game.fps / grhythm)
+                    moveMap 0, game.bs * -1, game.fps / grhythm
 
                 console.log('map.x =' + map.x + ', map.y =' + map.y + ',player.x =' + player.x + ', player.y =' + player.y)
         
@@ -548,8 +523,19 @@ main = ->
 
     return
 
-
-
+# Map 及び 敵キャラ移動
+moveMap = (x, y, frm) -> 
+    # map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
+    #    player.frame = 0 + (pdir * 4)).then(->
+    #    player.frame = 1 + (pdir * 4)).then(->
+    #    player.frame = 2 + (pdir * 4))
+    #    )
+    map.tl.moveBy(x, y, frm)
+    enemyMap.tl.moveBy(x, y, frm)
+    for enemy in enemyList
+        enemy.tl.moveBy(x, y, frm)
+    
+    return
 
 init = ->
     game = new Core(320, 320)
