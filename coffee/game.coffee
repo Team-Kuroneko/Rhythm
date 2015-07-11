@@ -23,6 +23,7 @@ map = null
 enemyList = []
 enemyPos = null
 enemyMap = null
+stage = null
 
 pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
 padtime = 0
@@ -54,6 +55,9 @@ main = ->
     bg1 = new Sprite(320, 320)
     bg1.image = game.assets[IMG_BACK_PATH]
     game.rootScene.addChild bg1
+    
+    #ステージ上の全てのオブジェクトをグループ化
+    stage = new Group()
     
     map = new Map(16, 16)
     map.image = game.assets[IMG_MAP0_PATH]
@@ -337,12 +341,14 @@ main = ->
     map.y = -pointY*16+game.bs*10+16#+16でキャラ1枠分戻す。pointY*16のpointYとは、衝突判定のない箇所の値を指し、16とは、ピクセルの値を指す。game.bs*10はプレイヤーキャラの画面座標。
     map.x = -pointX*16+game.bs*9+16#同上
     
-    game.rootScene.addChild map
+    #game.rootScene.addChild map
+    stage.addChild map
     
     #敵キャラ衝突判定MAP追加
     enemyMap.x = map.x
     enemyMap.y = map.y
-    game.rootScene.addChild enemyMap
+    #game.rootScene.addChild enemyMap
+    stage.addChild enemyMap
     
     player = new Sprite(16, 24)
     player.image = game.assets[IMG_CHARA0_PATH]
@@ -350,20 +356,23 @@ main = ->
     player.y = game.bs * 10
     player.frame = 0
     
-    game.rootScene.addChild player
+    #game.rootScene.addChild player
+    stage.addChild player
     
     pad = new Sprite(100,100)
     pad.image = game.assets[IMG_PAD]
     pad.x = 200
     pad.y = 200
     pad.frame = 0
-    game.rootScene.addChild pad
+    #game.rootScene.addChild pad
+    stage.addChild pad
 
     bar = new Sprite(1, 16)
     bar.image = game.assets[IMG_BAR_PATH]
     bar.x = 96
     bar.y = 0
-    game.rootScene.addChild bar
+    #game.rootScene.addChild bar
+    stage.addChild bar
     
     posX = 0
     posY = 0
@@ -377,27 +386,32 @@ main = ->
                 enemy.x = map.x + game.bs * posX
                 enemy.y = map.y + game.bs * posY
                 enemy.frame = 0
-                game.rootScene.addChild enemy
+                #game.rootScene.addChild enemy
+                stage.addChild enemy
                 enemyList.push enemy
                 #enemyMap.collisionData[posY][posX] = 1
             posX++
         posY++
     
-    game.rootScene.addChild player
-
     # ラベル
     text = new Label('判定')
     text.x = 0
     text.y = 16
     text.color = 'white'
-    game.rootScene.addChild text
+    #game.rootScene.addChild text
+    stage.addChild text
+    
     # ラベル
     time = new Label('time')
     time.x = 0
     time.y = 0
     time.color = 'white'
-    game.rootScene.addChild time
+    #game.rootScene.addChild time
+    stage.addChild time
 
+    # グループをrootSceneに追加
+    game.rootScene.addChild stage
+    
     # ルートシーンのフレーム処理
     game.rootScene.addEventListener Event.ENTER_FRAME, ->
         
@@ -486,7 +500,7 @@ main = ->
 
 
             # if map.hitTest(map.x - player.x, map.y - player.y) is true
-            if map.hitTest(game.bs*9+6-map.x, game.bs*10+22-map.y) is false
+            if map.hitTest(game.bs*9+6-map.x, game.bs*10+22-map.y) is false and enemyMap.hitTest(game.bs*9+6-map.x, game.bs*10+22-map.y) is false  
                 if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
                     # map.y -= game.bs
                     keypadMemory = 0
@@ -530,6 +544,7 @@ moveMap = (x, y, frm) ->
     #    player.frame = 1 + (pdir * 4)).then(->
     #    player.frame = 2 + (pdir * 4))
     #    )
+    frm = Math.floor(bpmsec / onefrm)
     map.tl.moveBy(x, y, frm)
     enemyMap.tl.moveBy(x, y, frm)
     for enemy in enemyList
