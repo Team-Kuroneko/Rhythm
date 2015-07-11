@@ -29,7 +29,7 @@
 
   MAP_SIZE_Y = 80;
 
-  grhythm = 2;
+  grhythm = 4;
 
   player = null;
 
@@ -174,7 +174,7 @@
     time.color = 'white';
     game.rootScene.addChild(time);
     game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
-      var inp, keyFrame, keypadMemory, px, py, _ref1;
+      var inp, keyFrame, keypadMemory, xCharaWidth, yCharaheight;
       padtime += 1;
       if (padtime === 24) {
         pad.frame = 1;
@@ -213,33 +213,29 @@
       keyTime = 0;
       gtime += 1;
       bar.width = game.bs / 2 * Math.floor((keika % bpmsec) / onefrm);
-      if (((onefrm / 2) >= (_ref1 = keika % bpmsec) && _ref1 >= 0) || (keika % bpmsec) > (bpmsec - (onefrm / 2))) {
-        frameTimecount++;
-        player.tl.moveBy(0, -1, 3).moveBy(0, 1, 3);
-        px = Math.ceil(Math.abs(map.x) / game.bs) + 9;
-        py = Math.ceil(Math.abs(map.y) / game.bs) + 10;
-        if (game.input.down) {
-          pdir = 0;
-          py += 1;
-        }
-        if (game.input.left) {
-          pdir = 1;
-          px -= 1;
-        }
-        if (game.input.right) {
-          pdir = 2;
-          px += 1;
-        }
-        if (game.input.up) {
-          pdir = 3;
-          py -= 1;
-        }
-        if (frameTimecount === 4) {
-          frameTimecount = 0;
-        }
-        frameNum = frameTimecount + (pdir * 4);
-        player.frame = frameNum;
-        if (map.hitTest(game.bs * 9 + 6 - map.x, game.bs * 10 + 22 - map.y) === false) {
+      if (game.input.down) {
+        pdir = 0;
+      }
+      if (game.input.left) {
+        pdir = 1;
+      }
+      if (game.input.right) {
+        pdir = 2;
+      }
+      if (game.input.up) {
+        pdir = 3;
+      }
+      xCharaWidth = 6;
+      yCharaheight = 22;
+      if (map.hitTest(game.bs * 9 + xCharaWidth - map.x, game.bs * 10 + yCharaheight - map.y) === false) {
+        if (gtime % (game.fps / grhythm) === 0) {
+          frameTimecount++;
+          player.tl.moveBy(0, -1, 5).moveBy(0, 1, 5);
+          if (frameTimecount === 4) {
+            frameTimecount = 0;
+          }
+          frameNum = frameTimecount + (pdir * 4);
+          player.frame = frameNum;
           if (pdir === 0 && map.y > game.bs * (MAP_SIZE_Y - 13) * -1) {
             keypadMemory = 0;
             moveMap(0, game.bs * -1, game.fps / grhythm);
@@ -256,20 +252,52 @@
             keypadMemory = 3;
             moveMap(0, game.bs, game.fps / grhythm);
           }
-        } else {
+        }
+      } else {
+        if (gtime % (game.fps / grhythm) === 0) {
+          frameTimecount++;
+          player.tl.moveBy(0, -5, 5).moveBy(0, 5, 5);
+          if (frameTimecount === 4) {
+            frameTimecount = 0;
+          }
+          frameNum = frameTimecount + (pdir * 4);
+          player.frame = frameNum;
           if (pdir === 0 && map.y > game.bs * (MAP_SIZE_Y - 13) * -1) {
-            moveMap(0, game.bs * 1, game.fps / grhythm);
+            if (keypadMemory === 1) {
+              moveMap(game.bs * 1, 0, game.fps / grhythm);
+            } else if (keypadMemory === 2) {
+              moveMap(game.bs * -1, 0, game.fps / grhythm);
+            } else {
+              moveMap(0, game.bs * 1, game.fps / grhythm);
+            }
           }
           if (pdir === 1 && map.x < player.x) {
-            moveMap(game.bs * -1, 0, game.fps / grhythm);
+            if (keypadMemory === 0) {
+              moveMap(0, game.bs * -1, game.fps / grhythm);
+            } else if (keypadMemory === 3) {
+              moveMap(0, game.bs * 1, game.fps / grhythm);
+            } else {
+              moveMap(game.bs * -1, 0, game.fps / grhythm);
+            }
           }
-          if (pdir === 2 && map.x > game.bs * (MAP_SIZE_X - 11) * -1) {
-            moveMap(game.bs * 1, 0, game.fps / grhythm);
+          if (pdir === 2 && map.x > game.bs * (MAP_SIZE_X - 12) * -1) {
+            if (keypadMemory === 0) {
+              moveMap(0, game.bs * -1, game.fps / grhythm);
+            } else if (keypadMemory === 3) {
+              moveMap(0, game.bs * 1, game.fps / grhythm);
+            } else {
+              moveMap(game.bs * 1, 0, game.fps / grhythm);
+            }
           }
           if (pdir === 3 && map.y < player.y) {
-            moveMap(0, game.bs * -1, game.fps / grhythm);
+            if (keypadMemory === 1) {
+              moveMap(game.bs * 1, 0, game.fps / grhythm);
+            } else if (keypadMemory === 2) {
+              moveMap(game.bs * -1, 0, game.fps / grhythm);
+            } else {
+              moveMap(0, game.bs * -1, game.fps / grhythm);
+            }
           }
-          console.log('map.x =' + map.x + ', map.y =' + map.y + ',player.x =' + player.x + ', player.y =' + player.y);
         }
       }
     });
@@ -289,7 +317,7 @@
     game = new Core(320, 320);
     game.preload(IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, IMG_PAD, IMG_BAR_PATH, IMG_MONSTER_SKE_PATH, IMG_BACK_PATH);
     game.bs = 16;
-    game.fps = 24;
+    game.fps = 48;
     onefrm = Math.floor(1000 / game.fps);
     game.onload = main;
     game.start();
