@@ -16,13 +16,11 @@ game = null
 gtime = 0
 MAP_SIZE_X = 80
 MAP_SIZE_Y = 80
-grhythm = 2
+grhythm = 4
 
 player = null
-map = null
 enemyList = []
 enemyPos = null
-enemyMap = null
 
 pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
 padtime = 0
@@ -45,7 +43,9 @@ onefrm = 0
 #charaのフレーム
 frameNum = 0
 frameTimecount = 0
-
+keypadMemory = 0#ひとつ前に押した方向キーを覚えておく
+xCharaWidth = 0#6にするとキャラの中央
+yCharaheight = 0#22にするとキャラの足元
 # ロードが完了した直後に実行される関数。
 main = -> 
     game.rootScene.backgroundColor = "#000000"
@@ -224,26 +224,26 @@ main = ->
         [1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1],
         [1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0]
     ]
-    #map.x += game.bs * 2
-    #map.y += game.bs * 4
-    #game.rootScene.addChild map
+    map.x += game.bs * 2
+    map.y += game.bs * 4
+    game.rootScene.addChild map
     
     # 敵キャラの初期位置
     enemyPos = [
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -322,7 +322,7 @@ main = ->
         enemyArray[i] = aryX
     enemyMap.loadData enemyArray
     enemyMap.collisionData = enemyPos
-    
+
     pointX = 0
     pointY = 0
     for dataIniColY in map.collisionData
@@ -338,11 +338,11 @@ main = ->
     map.x = -pointX*16+game.bs*9+16#同上
     
     game.rootScene.addChild map
-    
-    #敵キャラ衝突判定MAP追加
+        #敵キャラ衝突判定MAP追加
     enemyMap.x = map.x
     enemyMap.y = map.y
     game.rootScene.addChild enemyMap
+
     
     player = new Sprite(16, 24)
     player.image = game.assets[IMG_CHARA0_PATH]
@@ -374,12 +374,11 @@ main = ->
             if data isnt 0
                 enemy = new Sprite(16, 24)
                 enemy.image = game.assets[IMG_MONSTER_SKE_PATH]
-                enemy.x = map.x + game.bs * posX
-                enemy.y = map.y + game.bs * posY
+                enemy.x = game.bs * posX + game.bs * 2
+                enemy.y = game.bs * posY + game.bs * 4
                 enemy.frame = 0
                 game.rootScene.addChild enemy
                 enemyList.push enemy
-                #enemyMap.collisionData[posY][posX] = 1
             posX++
         posY++
     
@@ -453,74 +452,210 @@ main = ->
         
         # バーを動かす
         bar.width = game.bs / 2 * Math.floor((keika % bpmsec) / onefrm)
+        #144 160の位置が固定。
+        if game.input.down
+            pdir = 0#下
+            xCharaWidth = 6#6だとぎり衝突している
+            yCharaheight = 33#だとぎり衝突している
+        if game.input.left
+            pdir = 1#左
+            xCharaWidth = -1
+            yCharaheight = 22
+        if game.input.right
+            pdir = 2#右
+            xCharaWidth = 17
+            yCharaheight = 22
+        if game.input.up
+            pdir = 3#上
+            xCharaWidth = 6
+            yCharaheight = 15
+        console.log('map.x ='+ yCharaheight + ', map.y =' + xCharaWidth)
+
             #この中にいろいろな判定を付け加える
-        if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
-        #if gtime % (game.fps / grhythm) is 0
-            frameTimecount++
+        #if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
+        #xCharaWidth = 6#6にするとキャラの中央
+        #yCharaheight = 22#22にするとキャラの足元
+            
+        if map.hitTest(game.bs*9+xCharaWidth-map.x, game.bs*10+yCharaheight-map.y) is false
+        
+            
+            #この中にいろいろな判定を付け加える
+            #if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
+            if gtime % (game.fps / grhythm) is 0
+                frameTimecount++                # キャラをぴょんぴょん
+                player.tl.moveBy(0, -1, 5).moveBy(0, 1, 5)
 
-            # キャラをぴょんぴょん
-            player.tl.moveBy(0, -1, 3).moveBy(0, 1, 3)
+                #count++
+                if frameTimecount == 4
+                    frameTimecount = 0
 
-            px = Math.ceil(Math.abs(map.x) / game.bs) + 9
-            py = Math.ceil(Math.abs(map.y) / game.bs) + 10
-            #px = if map.x > 0 then  9 - Math.ceil(Math.round(map.x) / game.bs) else if map.x is 0 then map.x +  9 else Math.round(Math.abs(map.x) / game.bs) + 9
-            #py = if map.y > 0 then 11 - Math.ceil(Math.round(map.y) / game.bs) else if map.y is 0 then map.y + 11 else Math.round(Math.abs(map.y) / game.bs) + 11
-
-            if game.input.down
-                pdir = 0
-                py += 1
-            if game.input.left
-                pdir = 1
-                px -= 1
-            if game.input.right
-                pdir = 2
-                px += 1
-            if game.input.up
-                pdir = 3
-                py -= 1
-            if frameTimecount == 4
-                frameTimecount = 0
-
-            frameNum = frameTimecount + (pdir * 4)
-            player.frame = frameNum    
+                frameNum = frameTimecount + (pdir * 4)
+                player.frame = frameNum    
 
 
-            # if map.hitTest(map.x - player.x, map.y - player.y) is true
-            if map.hitTest(game.bs*9+6-map.x, game.bs*10+22-map.y) is false
+
                 if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
                     # map.y -= game.bs
                     keypadMemory = 0
-                    moveMap 0, game.bs * -1, game.fps / grhythm
+                    #moveMap 0, game.bs * -1, game.fps / grhythm
+                    map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 1 and map.x < player.x
-                    #  map.x += game.bs
+                   #  map.x += game.bs
                     keypadMemory = 1
-                    moveMap game.bs, 0, game.fps / grhythm
+                    #moveMap game.bs, 0, game.fps / grhythm
+                    map.tl.moveBy(game.bs, 0, game.fps / grhythm).and().then(->
+                     #   player.frame = 0 + (pdir * 4)).then(->
+                      #  player.frame = 1 + (pdir * 4)).then(->
+                       # player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 12) * -1
                     # map.x -= game.bs
                     keypadMemory = 2
-                    moveMap game.bs * -1, 0, game.fps / grhythm
+                    #moveMap game.bs * -1, 0, game.fps / grhythm
+                    map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
+                        #player.frame = 0 + (pdir * 4)).then(->
+                    #    player.frame = 1 + (pdir * 4)).then(->
+                     #   player.frame = 2 + (pdir * 4))
+                                                      )
                 if pdir is 3 and map.y < player.y
                     # map.y += game.bs
                     keypadMemory = 3
-                    moveMap 0, game.bs, game.fps / grhythm
-            else
-                if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
-                    # map.y -= game.bs
+                   # moveMap 0, game.bs, game.fps / grhythm
+                    map.tl.moveBy(0, game.bs, game.fps / grhythm).and().then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                      )
+            #    console.log('map.x =' + map.x + ', map.y =' + map.y + 'player.x =' + player.x + ', player.y =' + player.y)
+            return
+        else
+            #この中にいろいろな判定を付け加える
+            #if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
+            if gtime % (game.fps / grhythm) is 0
+                frameTimecount++
+                # キャラをぴょんぴょん
+                player.tl.moveBy(0, -5, 5).moveBy(0, 5, 5)
+
+                if frameTimecount == 4
+                    frameTimecount = 0
+
+                frameNum = frameTimecount + (pdir * 4)
+                player.frame = frameNum    
+
+#                console.log('num =' + num + 'count =' + count)
+
+
+                if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1#画面下へ移動したとき
                     moveMap 0, game.bs * 1, game.fps / grhythm
-                if pdir is 1 and map.x < player.x
-                    # map.x += game.bs
+                    # map.y -= game.bs
+                    if keypadMemory is 1
+                        map.tl.moveBy(game.bs * 1, 0, game.fps / grhythm).and().then(->
+                        #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                
+                    else if keypadMemory is 2
+                        map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                            
+                    else
+                        map.tl.moveBy(0, game.bs * 1, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                if pdir is 1 and map.x < player.x#左へ移動したとき
                     moveMap game.bs * -1, 0, game.fps / grhythm
-                if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 11) * -1
+                   #  map.x += game.bs
+                    if keypadMemory is 0
+                        map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
+                        #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                
+                    else if keypadMemory is 3
+                        map.tl.moveBy(0, game.bs * 1, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                            
+                    else
+                        map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 12) * -1#右へ移動したとき
                     # map.x -= game.bs
                     moveMap game.bs * 1, 0, game.fps / grhythm
-                if pdir is 3 and map.y < player.y
-                    # map.y += game.bs
+                    if keypadMemory is 0
+                        map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
+                        #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                
+                    else if keypadMemory is 3
+                        map.tl.moveBy(0, game.bs * 1, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                            
+                    else
+                        map.tl.moveBy(game.bs * 1, 0, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                if pdir is 3 and map.y < player.y#上に移動したとき
                     moveMap 0, game.bs * -1, game.fps / grhythm
-
-                console.log('map.x =' + map.x + ', map.y =' + map.y + ',player.x =' + player.x + ', player.y =' + player.y)
-        
-        return
-
+                    # map.y += game.bs
+                    if keypadMemory is 1
+                        map.tl.moveBy(game.bs * 1, 0, game.fps / grhythm).and().then(->
+                        #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                
+                    else if keypadMemory is 2
+                        map.tl.moveBy(game.bs * -1, 0, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+                            
+                    else
+                        map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
+                   #     player.frame = num).then(->
+                    #    player.frame = 0 + (pdir * 4)).then(->
+                     #   player.frame = 1 + (pdir * 4)).then(->
+                      #  player.frame = 2 + (pdir * 4))
+                                                                )
+            return
+            #    console.log('map.x =' + map.x + ', map.y =' + map.y + 'player.x =' + player.x + ', player.y =' + player.y)
     return
 
 # Map 及び 敵キャラ移動
@@ -537,12 +672,15 @@ moveMap = (x, y, frm) ->
     
     return
 
+
+
+
 init = ->
     game = new Core(320, 320)
     # 素材をプリロードする
     game.preload IMG_CHARA0_PATH ,IMG_CHARA1_PATH ,IMG_ICON1_PATH ,IMG_MAP0_PATH ,IMG_MAP2_PATH, IMG_PAD, IMG_BAR_PATH, IMG_MONSTER_SKE_PATH, IMG_BACK_PATH
     game.bs = 16
-    game.fps = 24
+    game.fps = 48
     onefrm = Math.floor(1000 / game.fps)
     game.onload = main
     # ゲームを開始する。
