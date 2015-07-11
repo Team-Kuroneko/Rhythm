@@ -19,8 +19,10 @@ MAP_SIZE_Y = 80
 grhythm = 4
 
 player = null
+map = null
 enemyList = []
 enemyPos = null
+enemyMap = null
 
 pdir = 0  # プレイヤーの進行方向 0：下 1：左 2：右 3：上
 padtime = 0
@@ -374,11 +376,12 @@ main = ->
             if data isnt 0
                 enemy = new Sprite(16, 24)
                 enemy.image = game.assets[IMG_MONSTER_SKE_PATH]
-                enemy.x = game.bs * posX + game.bs * 2
-                enemy.y = game.bs * posY + game.bs * 4
+                enemy.x = map.x + game.bs * posX
+                enemy.y = map.y + game.bs * posY
                 enemy.frame = 0
                 game.rootScene.addChild enemy
                 enemyList.push enemy
+                #enemyMap.collisionData[posY][posX] = 1
             posX++
         posY++
     
@@ -551,7 +554,7 @@ main = ->
 
 
                 if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1#画面下へ移動したとき
-                    moveMap 0, game.bs * 1, game.fps / grhythm
+                  #  moveMap 0, game.bs * 1, game.fps / grhythm
                     # map.y -= game.bs
                     if keypadMemory is 1
                         map.tl.moveBy(game.bs * 1, 0, game.fps / grhythm).and().then(->
@@ -577,7 +580,7 @@ main = ->
                       #  player.frame = 2 + (pdir * 4))
                                                                 )
                 if pdir is 1 and map.x < player.x#左へ移動したとき
-                    moveMap game.bs * -1, 0, game.fps / grhythm
+                 #   moveMap game.bs * -1, 0, game.fps / grhythm
                    #  map.x += game.bs
                     if keypadMemory is 0
                         map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
@@ -604,7 +607,7 @@ main = ->
                                                                 )
                 if pdir is 2 and map.x > game.bs * (MAP_SIZE_X - 12) * -1#右へ移動したとき
                     # map.x -= game.bs
-                    moveMap game.bs * 1, 0, game.fps / grhythm
+                   # moveMap game.bs * 1, 0, game.fps / grhythm
                     if keypadMemory is 0
                         map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
                         #     player.frame = num).then(->
@@ -629,7 +632,7 @@ main = ->
                       #  player.frame = 2 + (pdir * 4))
                                                                 )
                 if pdir is 3 and map.y < player.y#上に移動したとき
-                    moveMap 0, game.bs * -1, game.fps / grhythm
+                #    moveMap 0, game.bs * -1, game.fps / grhythm
                     # map.y += game.bs
                     if keypadMemory is 1
                         map.tl.moveBy(game.bs * 1, 0, game.fps / grhythm).and().then(->

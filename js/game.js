@@ -1,5 +1,5 @@
 (function() {
-  var IMG_BACK_PATH, IMG_BAR_PATH, IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, IMG_MONSTER_SKE_PATH, IMG_PAD, MAP_SIZE_X, MAP_SIZE_Y, bpm, bpmsec, enemyList, enemyPos, firstTime, frameNum, frameTimecount, game, good, great, grhythm, gtime, init, keika, keikacnt, keyTime, keypadMemory, main, miss, moveMap, newTime, oldTime, onefrm, padtime, pdir, player, success, xCharaWidth, yCharaheight;
+  var IMG_BACK_PATH, IMG_BAR_PATH, IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, IMG_MONSTER_SKE_PATH, IMG_PAD, MAP_SIZE_X, MAP_SIZE_Y, bpm, bpmsec, enemyList, enemyMap, enemyPos, firstTime, frameNum, frameTimecount, game, good, great, grhythm, gtime, init, keika, keikacnt, keyTime, keypadMemory, main, map, miss, moveMap, newTime, oldTime, onefrm, padtime, pdir, player, success, xCharaWidth, yCharaheight;
 
   enchant();
 
@@ -33,9 +33,13 @@
 
   player = null;
 
+  map = null;
+
   enemyList = [];
 
   enemyPos = null;
+
+  enemyMap = null;
 
   pdir = 0;
 
@@ -78,7 +82,7 @@
   yCharaheight = 0;
 
   main = function() {
-    var aryX, bar, bg1, data, dataIniColX, dataIniColY, dataY, enemy, enemyArray, enemyMap, i, j, map, mapArray, pad, pointX, pointY, posX, posY, text, time, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _n, _ref;
+    var aryX, bar, bg1, data, dataIniColX, dataIniColY, dataY, enemy, enemyArray, i, j, mapArray, pad, pointX, pointY, posX, posY, text, time, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _n, _ref;
     game.rootScene.backgroundColor = "#000000";
     console.log('map');
     bg1 = new Sprite(320, 320);
@@ -157,8 +161,8 @@
         if (data !== 0) {
           enemy = new Sprite(16, 24);
           enemy.image = game.assets[IMG_MONSTER_SKE_PATH];
-          enemy.x = game.bs * posX + game.bs * 2;
-          enemy.y = game.bs * posY + game.bs * 4;
+          enemy.x = map.x + game.bs * posX;
+          enemy.y = map.y + game.bs * posY;
           enemy.frame = 0;
           game.rootScene.addChild(enemy);
           enemyList.push(enemy);
@@ -275,7 +279,6 @@
           frameNum = frameTimecount + (pdir * 4);
           player.frame = frameNum;
           if (pdir === 0 && map.y > game.bs * (MAP_SIZE_Y - 13) * -1) {
-            moveMap(0, game.bs * 1, game.fps / grhythm);
             if (keypadMemory === 1) {
               map.tl.moveBy(game.bs * 1, 0, game.fps / grhythm).and().then(function() {});
             } else if (keypadMemory === 2) {
@@ -285,7 +288,6 @@
             }
           }
           if (pdir === 1 && map.x < player.x) {
-            moveMap(game.bs * -1, 0, game.fps / grhythm);
             if (keypadMemory === 0) {
               map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(function() {});
             } else if (keypadMemory === 3) {
@@ -295,7 +297,6 @@
             }
           }
           if (pdir === 2 && map.x > game.bs * (MAP_SIZE_X - 12) * -1) {
-            moveMap(game.bs * 1, 0, game.fps / grhythm);
             if (keypadMemory === 0) {
               map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(function() {});
             } else if (keypadMemory === 3) {
@@ -305,7 +306,6 @@
             }
           }
           if (pdir === 3 && map.y < player.y) {
-            moveMap(0, game.bs * -1, game.fps / grhythm);
             if (keypadMemory === 1) {
               map.tl.moveBy(game.bs * 1, 0, game.fps / grhythm).and().then(function() {});
             } else if (keypadMemory === 2) {
