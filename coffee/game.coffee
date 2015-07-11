@@ -473,30 +473,39 @@ main = ->
         #py = Math.ceil(Math.abs(map.y) / game.bs) + 10
         #px = if map.x > 0 then  9 - Math.ceil(Math.round(map.x) / game.bs) else if map.x is 0 then map.x +  9 else Math.round(Math.abs(map.x) / game.bs) + 9
         #py = if map.y > 0 then 11 - Math.ceil(Math.round(map.y) / game.bs) else if map.y is 0 then map.y + 11 else Math.round(Math.abs(map.y) / game.bs) + 11
-
+###キー入力をここでさせることでいつでもキー入力ができるようになる
         if game.input.down
             pdir = 0#下
-#            xCharaWidth = 6#6だとぎり衝突している
- #           yCharaheight = 22#だとぎり衝突している
+            xCharaWidth = 6#6だとぎり衝突している
+            yCharaheight = 22#だとぎり衝突している
         if game.input.left
             pdir = 1#左
-     #       xCharaWidth = -1
-    #        yCharaheight = 22
+            xCharaWidth = -1
+            yCharaheight = 22
         if game.input.right
             pdir = 2#右
-   #         xCharaWidth = 17
-  #          yCharaheight = 22
+            xCharaWidth = 17
+            yCharaheight = 22
         if game.input.up
             pdir = 3#上
-#            xCharaWidth = 6
- #           yCharaheight = 15
-
+            xCharaWidth = 6
+            yCharaheight = 15
+###
         xCharaWidth = 6#が中心の基準
         yCharaheight = 22#が中心の基準
 
 
             # if map.hitTest(map.x - player.x, map.y - player.y) is true
         if map.hitTest(game.bs*9+xCharaWidth-map.x, game.bs*10+yCharaheight-map.y) is false
+            #ここでキー入力でhitしていないときのみ入力できる
+            if game.input.down
+                pdir = 0#下
+            if game.input.left
+                pdir = 1#左
+            if game.input.right
+                pdir = 2#右
+            if game.input.up
+                pdir = 3#上
         
             
             #この中にいろいろな判定を付け加える
