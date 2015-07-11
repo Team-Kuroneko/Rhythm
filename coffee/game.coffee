@@ -358,13 +358,15 @@ main = ->
     pad.y = 200
     pad.frame = 0
     game.rootScene.addChild pad
-
+    
     bar = new Sprite(1, 16)
     bar.image = game.assets[IMG_BAR_PATH]
     bar.x = 96
     bar.y = 0
     game.rootScene.addChild bar
-    
+    #衝突判定の座標を確認するためのもの
+    game.rootScene.addChild map
+
     posX = 0
     posY = 0
     # 敵キャラの生成
@@ -397,6 +399,17 @@ main = ->
     time.y = 0
     time.color = 'white'
     game.rootScene.addChild time
+    clicklbl = new Label('クリックした座標位置')
+    clicklbl.moveTo 10, 120
+    game.rootScene.addChild clicklbl
+    clicklbl2 = new Label('hitTest()')
+    clicklbl2.moveTo 10, 190
+    game.rootScene.addChild clicklbl2
+
+    game.rootScene.ontouchstart = (e) ->
+        clicklbl.text = 'クリックした座標位置 (' + parseInt(e.x) + ', ' + parseInt(e.y) + ')'
+        clicklbl2.text = 'hitTest(' + map.hitTest(e.x-map.x, e.y-map.y) + ')' + player.x + 'playerX' +player.y + 'playerY' + map.x + 'mapX' +map.y + 'mapY'  
+
 
     # ルートシーンのフレーム処理
     game.rootScene.addEventListener Event.ENTER_FRAME, ->
@@ -463,8 +476,8 @@ main = ->
 
         if game.input.down
             pdir = 0#下
-       #     xCharaWidth = 6#6だとぎり衝突している
-      #      yCharaheight = 33#だとぎり衝突している
+#            xCharaWidth = 6#6だとぎり衝突している
+ #           yCharaheight = 22#だとぎり衝突している
         if game.input.left
             pdir = 1#左
      #       xCharaWidth = -1

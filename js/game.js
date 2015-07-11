@@ -76,7 +76,7 @@
   frameTimecount = 0;
 
   main = function() {
-    var aryX, bar, bg1, data, dataIniColX, dataIniColY, dataY, enemy, enemyArray, i, j, mapArray, pad, pointX, pointY, posX, posY, text, time, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _n, _ref;
+    var aryX, bar, bg1, clicklbl, clicklbl2, data, dataIniColX, dataIniColY, dataY, enemy, enemyArray, i, j, mapArray, pad, pointX, pointY, posX, posY, text, time, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _n, _ref;
     game.rootScene.backgroundColor = "#000000";
     console.log('map');
     bg1 = new Sprite(320, 320);
@@ -142,6 +142,7 @@
     bar.x = 96;
     bar.y = 0;
     game.rootScene.addChild(bar);
+    game.rootScene.addChild(map);
     posX = 0;
     posY = 0;
     for (_m = 0, _len2 = enemyPos.length; _m < _len2; _m++) {
@@ -173,6 +174,16 @@
     time.y = 0;
     time.color = 'white';
     game.rootScene.addChild(time);
+    clicklbl = new Label('クリックした座標位置');
+    clicklbl.moveTo(10, 120);
+    game.rootScene.addChild(clicklbl);
+    clicklbl2 = new Label('hitTest()');
+    clicklbl2.moveTo(10, 190);
+    game.rootScene.addChild(clicklbl2);
+    game.rootScene.ontouchstart = function(e) {
+      clicklbl.text = 'クリックした座標位置 (' + parseInt(e.x) + ', ' + parseInt(e.y) + ')';
+      return clicklbl2.text = 'hitTest(' + map.hitTest(e.x - map.x, e.y - map.y) + ')' + player.x + 'playerX' + player.y + 'playerY' + map.x + 'mapX' + map.y + 'mapY';
+    };
     game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
       var inp, keyFrame, keypadMemory, xCharaWidth, yCharaheight;
       padtime += 1;
