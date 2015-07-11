@@ -500,13 +500,13 @@ main = ->
                 if pdir is 0 and map.y > game.bs * (MAP_SIZE_Y - 13) * -1
                     # map.y -= game.bs
                     keypadMemory = 0
-                    #moveMap 0, game.bs * -1, game.fps / grhythm
-                    map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
+                    moveMap 0, game.bs * -1, game.fps / grhythm
+                    #map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(->
                    #     player.frame = num).then(->
                     #    player.frame = 0 + (pdir * 4)).then(->
                      #   player.frame = 1 + (pdir * 4)).then(->
                       #  player.frame = 2 + (pdir * 4))
-                                                      )
+                     #                                 )
                 if pdir is 1 and map.x < player.x
                    #  map.x += game.bs
                     keypadMemory = 1

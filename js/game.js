@@ -254,7 +254,7 @@
           player.frame = frameNum;
           if (pdir === 0 && map.y > game.bs * (MAP_SIZE_Y - 13) * -1) {
             keypadMemory = 0;
-            map.tl.moveBy(0, game.bs * -1, game.fps / grhythm).and().then(function() {});
+            moveMap(0, game.bs * -1, game.fps / grhythm);
           }
           if (pdir === 1 && map.x < player.x) {
             keypadMemory = 1;
