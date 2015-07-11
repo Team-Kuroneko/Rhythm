@@ -29,7 +29,7 @@
 
   MAP_SIZE_Y = 80;
 
-  grhythm = 4;
+  grhythm = 2;
 
   player = null;
 
@@ -185,7 +185,7 @@
       return clicklbl2.text = 'hitTest(' + map.hitTest(e.x - map.x, e.y - map.y) + ')' + player.x + 'playerX' + player.y + 'playerY' + map.x + 'mapX' + map.y + 'mapY';
     };
     game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
-      var inp, keyFrame, keypadMemory, xCharaWidth, yCharaheight;
+      var inp, keyFrame, keypadMemory, xCharaWidth, yCharaheight, _ref1, _ref2;
       padtime += 1;
       if (padtime === 24) {
         pad.frame = 1;
@@ -239,7 +239,7 @@
       xCharaWidth = 6;
       yCharaheight = 22;
       if (map.hitTest(game.bs * 9 + xCharaWidth - map.x, game.bs * 10 + yCharaheight - map.y) === false) {
-        if (gtime % (game.fps / grhythm) === 0) {
+        if (((onefrm / 2) >= (_ref1 = keika % bpmsec) && _ref1 >= 0) || (keika % bpmsec) > (bpmsec - (onefrm / 2))) {
           frameTimecount++;
           player.tl.moveBy(0, -1, 5).moveBy(0, 1, 5);
           if (frameTimecount === 4) {
@@ -265,7 +265,7 @@
           }
         }
       } else {
-        if (gtime % (game.fps / grhythm) === 0) {
+        if (((onefrm / 2) >= (_ref2 = keika % bpmsec) && _ref2 >= 0) || (keika % bpmsec) > (bpmsec - (onefrm / 2))) {
           frameTimecount++;
           player.tl.moveBy(0, -5, 5).moveBy(0, 5, 5);
           if (frameTimecount === 4) {
@@ -328,7 +328,7 @@
     game = new Core(320, 320);
     game.preload(IMG_CHARA0_PATH, IMG_CHARA1_PATH, IMG_ICON1_PATH, IMG_MAP0_PATH, IMG_MAP2_PATH, IMG_PAD, IMG_BAR_PATH, IMG_MONSTER_SKE_PATH, IMG_BACK_PATH);
     game.bs = 16;
-    game.fps = 48;
+    game.fps = 24;
     onefrm = Math.floor(1000 / game.fps);
     game.onload = main;
     game.start();

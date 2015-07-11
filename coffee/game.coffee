@@ -16,7 +16,7 @@ game = null
 gtime = 0
 MAP_SIZE_X = 80
 MAP_SIZE_Y = 80
-grhythm = 4
+grhythm = 2
 
 player = null
 map = null
@@ -500,8 +500,8 @@ main = ->
         
             
             #この中にいろいろな判定を付け加える
-            #if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
-            if gtime % (game.fps / grhythm) is 0
+            if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
+            #if gtime % (game.fps / grhythm) is 0
                 frameTimecount++                
                 # キャラをぴょんぴょん
                 player.tl.moveBy(0, -1, 5).moveBy(0, 1, 5)
@@ -534,8 +534,8 @@ main = ->
             return
         else
             #この中にいろいろな判定を付け加える
-            #if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
-            if gtime % (game.fps / grhythm) is 0
+            if (onefrm / 2) >= (keika % bpmsec) >= 0 or (keika % bpmsec) > (bpmsec - (onefrm / 2))
+            #if gtime % (game.fps / grhythm) is 0
                 frameTimecount++
                 # キャラをぴょんぴょん
                 player.tl.moveBy(0, -5, 5).moveBy(0, 5, 5)
@@ -600,7 +600,7 @@ init = ->
     # 素材をプリロードする
     game.preload IMG_CHARA0_PATH ,IMG_CHARA1_PATH ,IMG_ICON1_PATH ,IMG_MAP0_PATH ,IMG_MAP2_PATH, IMG_PAD, IMG_BAR_PATH, IMG_MONSTER_SKE_PATH, IMG_BACK_PATH
     game.bs = 16
-    game.fps = 48
+    game.fps = 24
     onefrm = Math.floor(1000 / game.fps)
     game.onload = main
     # ゲームを開始する。
